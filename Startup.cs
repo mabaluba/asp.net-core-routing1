@@ -1,10 +1,13 @@
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,13 +35,22 @@ namespace less4_lasthomework
             var sections = AppConfiguration.GetSection("books");
             var section = sections.GetChildren();
 
+            var myRouteHandler1 = new RouteHandler(Handler1);
+            var routeBuilder1 = new RouteBuilder(app, myRouteHandler1);
+
+            routeBuilder1.MapRoute("default", "Library");
+            app.UseRouter(routeBuilder1.Build());
+
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
-                
-                
-                endpoints.MapGet("/Library", async context =>
+                endpoints.MapGet("/", async context =>
+                {
+                    await context.Response.WriteAsync("Hello World!");
+                });
+
+                /*endpoints.MapGet("/Library", async context =>
                 {
                     await context.Response.WriteAsync("Hello Client!");
                 });
@@ -50,9 +62,19 @@ namespace less4_lasthomework
                         
                         await context.Response.WriteAsync($"<br>{sec.Key} - {sec.Value}</br>");
                     }
-                    
                 });
+                endpoints.MapGet("/Library/Profile/{id?:range(0,5)}", async context =>
+                {
+                    await context.Response.WriteAsync("Hello Anonimous Client!");
+                });*/
             });
         }
+
+        private async Task Handler1(HttpContext context)
+        {
+            await context.Response.WriteAsync("Handler1 Hello Client!");
+        }
+
+
     }
 }
