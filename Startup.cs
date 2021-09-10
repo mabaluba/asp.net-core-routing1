@@ -49,7 +49,7 @@ namespace less4_lasthomework
             
             routeBuilderLibrary.MapRoute("default", "Library");
             routeBuilderLibraryBooks.MapRoute("default", "Library/Books");
-            routeBuilderLibraryProfile.MapRoute("default", "Library/Books/Profile");
+            routeBuilderLibraryProfile.MapRoute("default", "Library/Profile/{id:range(0,5)}");//{id::range(0,5)
 
             app.UseRouter(routeBuilderLibrary.Build());
             app.UseRouter(routeBuilderLibraryBooks.Build());
