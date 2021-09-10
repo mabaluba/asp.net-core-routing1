@@ -32,24 +32,24 @@ namespace less4_lasthomework
             builder.SetBasePath(env.ContentRootPath);
             builder.AddJsonFile("books.json");
             AppConfiguration = builder.Build();
-           /* var sections = AppConfiguration.GetSection("books");
-            var section = sections.GetChildren();*/
+            /* var sections = AppConfiguration.GetSection("books");
+             var section = sections.GetChildren();*/
 
             var myRouteHandlerLibrary = new RouteHandler(HandlerLibrary);
             var myRouteHandlerLibraryBooks = new RouteHandler(HandlerLibraryBooks);
             var myRouteHandlerLibraryProfile = new RouteHandler(HandlerLibraryProfile);
 
-            
+
             var routeBuilderLibrary = new RouteBuilder(app, myRouteHandlerLibrary);
             var routeBuilderLibraryBooks = new RouteBuilder(app, myRouteHandlerLibraryBooks);
             var routeBuilderLibraryProfile = new RouteBuilder(app, myRouteHandlerLibraryProfile);
 
             //var routeBuilderLibraryBooks = new RouteBuilder(app, new RouteHandler(HandlerLibrary)),
             //app.UseRouter(new RouteBuilder(app, new RouteHandler(HandlerLibraryBooks)).Build());
-            
+
             routeBuilderLibrary.MapRoute("default", "Library");
             routeBuilderLibraryBooks.MapRoute("default", "Library/Books");
-            routeBuilderLibraryProfile.MapRoute("default", "Library/Profile/{id:range(0,5)}");//{id::range(0,5)
+            routeBuilderLibraryProfile.MapRoute("default", "Library/Profile/{id:range(0,5)?}");//, constraints: new {id=5});//{id::range(0,5)
 
             app.UseRouter(routeBuilderLibrary.Build());
             app.UseRouter(routeBuilderLibraryBooks.Build());
@@ -87,22 +87,37 @@ namespace less4_lasthomework
         }
 
         private async Task HandlerLibraryProfile(HttpContext context)
-        { 
-            var sections = AppConfiguration.GetSection("books");
-            var section = sections.GetChildren();
-            foreach (var sec in section)
+        {
+            var a = context.GetRouteValue("id").ToString();
+            switch (a)
             {
-                await context.Response.WriteAsync($"<br>{sec.Key} - {sec.Value}</br>");
+                case "0": 
+                    await context.Response.WriteAsync($"<br>{a} ноль</br>");
+                    break;
+                case "1": 
+                    await context.Response.WriteAsync($"<br>{a} один</br>");
+                    break;
+                case "2": 
+                    await context.Response.WriteAsync($"<br>{a} два</br>");
+                    break;
+                default:
+                    await context.Response.WriteAsync($"<br>{a}</br>");
+                    break;
             }
+            
         }
-
         private async Task HandlerLibrary(HttpContext context)
         {
             await context.Response.WriteAsync("HandlerLibrary!");
         }
         private async Task HandlerLibraryBooks(HttpContext context)
         {
-            await context.Response.WriteAsync("HandlerLibraryBooks!");
+            var sections = AppConfiguration.GetSection("books");
+            var section = sections.GetChildren();
+            foreach (var sec in section)
+            {
+                await context.Response.WriteAsync($"<br>{sec.Key} - {sec.Value}</br>");
+            }
         }
 
 
