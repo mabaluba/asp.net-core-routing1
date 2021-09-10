@@ -32,14 +32,30 @@ namespace less4_lasthomework
             builder.SetBasePath(env.ContentRootPath);
             builder.AddJsonFile("books.json");
             AppConfiguration = builder.Build();
-            var sections = AppConfiguration.GetSection("books");
-            var section = sections.GetChildren();
+           /* var sections = AppConfiguration.GetSection("books");
+            var section = sections.GetChildren();*/
 
-            var myRouteHandler1 = new RouteHandler(Handler1);
-            var routeBuilder1 = new RouteBuilder(app, myRouteHandler1);
+            var myRouteHandlerLibrary = new RouteHandler(HandlerLibrary);
+            var myRouteHandlerLibraryBooks = new RouteHandler(HandlerLibraryBooks);
+            var myRouteHandlerLibraryProfile = new RouteHandler(HandlerLibraryProfile);
 
-            routeBuilder1.MapRoute("default", "Library");
-            app.UseRouter(routeBuilder1.Build());
+            
+            var routeBuilderLibrary = new RouteBuilder(app, myRouteHandlerLibrary);
+            var routeBuilderLibraryBooks = new RouteBuilder(app, myRouteHandlerLibraryBooks);
+            var routeBuilderLibraryProfile = new RouteBuilder(app, myRouteHandlerLibraryProfile);
+
+            //var routeBuilderLibraryBooks = new RouteBuilder(app, new RouteHandler(HandlerLibrary)),
+            //app.UseRouter(new RouteBuilder(app, new RouteHandler(HandlerLibraryBooks)).Build());
+            
+            routeBuilderLibrary.MapRoute("default", "Library");
+            routeBuilderLibraryBooks.MapRoute("default", "Library/Books");
+            routeBuilderLibraryProfile.MapRoute("default", "Library/Books/Profile");
+
+            app.UseRouter(routeBuilderLibrary.Build());
+            app.UseRouter(routeBuilderLibraryBooks.Build());
+            app.UseRouter(routeBuilderLibraryProfile.Build());
+            
+
 
             app.UseRouting();
 
@@ -61,7 +77,7 @@ namespace less4_lasthomework
                     {
                         
                         await context.Response.WriteAsync($"<br>{sec.Key} - {sec.Value}</br>");
-                    }
+             B       }
                 });
                 endpoints.MapGet("/Library/Profile/{id?:range(0,5)}", async context =>
                 {
@@ -70,9 +86,23 @@ namespace less4_lasthomework
             });
         }
 
-        private async Task Handler1(HttpContext context)
+        private async Task HandlerLibraryProfile(HttpContext context)
+        { 
+            var sections = AppConfiguration.GetSection("books");
+            var section = sections.GetChildren();
+            foreach (var sec in section)
+            {
+                await context.Response.WriteAsync($"<br>{sec.Key} - {sec.Value}</br>");
+            }
+        }
+
+        private async Task HandlerLibrary(HttpContext context)
         {
-            await context.Response.WriteAsync("Handler1 Hello Client!");
+            await context.Response.WriteAsync("HandlerLibrary!");
+        }
+        private async Task HandlerLibraryBooks(HttpContext context)
+        {
+            await context.Response.WriteAsync("HandlerLibraryBooks!");
         }
 
 
